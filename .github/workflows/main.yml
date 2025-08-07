@@ -1,0 +1,45 @@
+name: Build and Push Docker Images to ECR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_REPOSITORY_APP: ${{ secrets.ECR_REPOSITORY_BACKEND }}
+      ECR_REPOSITORY_WEB: ${{ secrets.ECR_REPOSITORY_WEB }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set image tag
+        run: echo "TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Build and push app-tier image
+        run: |
+          docker build -t $ECR_REPOSITORY_APP:$TAG ./app-tier
+          docker tag $ECR_REPOSITORY_APP:$TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY_APP:$TAG
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY_APP:$TAG
+
+      - name: Build and push web-tier image
+        run: |
+          docker build -t $ECR_REPOSITORY_WEB:$TAG ./web-tier
+          docker tag $ECR_REPOSITORY_WEB:$TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY_WEB:$TAG
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY_WEB:$TAG
