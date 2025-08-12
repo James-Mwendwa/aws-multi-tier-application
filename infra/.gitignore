@@ -1,0 +1,43 @@
+# Terraform state files
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+crash.log
+
+# Sensitive variable files
+terraform.tfvars
+*.tfvars.json
+
+# AWS credentials & config
+.aws/
+*.pem
+
+# Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Docker files
+*.tar
+.dockerignore
+
+# CI/CD local configs
+.secrets/
+.env
+.env.*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# VSCode & IDE files
+.vscode/
+.idea/
