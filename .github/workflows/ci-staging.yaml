@@ -39,11 +39,11 @@ jobs:
     - name: Build and push app-tier image
       run: |
           REG="${{ steps.login-ecr.outputs.registry }}"
-          docker build -t $ECR_REPOSITORY_BACKEND:$TAG ./app-tier
-          docker tag  $ECR_REPOSITORY_BACKEND:$TAG $REG/$ECR_REPOSITORY_BACKEND:$TAG
-          docker tag  $ECR_REPOSITORY_BACKEND:$TAG $REG/$ECR_REPOSITORY_BACKEND:staging-latest
-          docker push $REG/$ECR_REPOSITORY_BACKEND:$TAG
-          docker push $REG/$ECR_REPOSITORY_BACKEND:staging-latest
+          docker build -t $ECR_REPOSITORY_APP:$TAG ./app-tier
+          docker tag  $ECR_REPOSITORY_APP:$TAG $REG/$ECR_REPOSITORY_APP:$TAG
+          docker tag  $ECR_REPOSITORY_APP:$TAG $REG/$ECR_REPOSITORY_APP:staging-latest
+          docker push $REG/$ECR_REPOSITORY_APP:$TAG
+          docker push $REG/$ECR_REPOSITORY_APP:staging-latest
           
 
     
