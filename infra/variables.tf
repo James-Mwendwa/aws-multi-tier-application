@@ -62,3 +62,8 @@ variable "create_kms_key" {
     type = bool
     default = false  
 }
+
+variable "cluster_name" {
+  description = "eks cluster name"
+  type = string
+}
