@@ -31,3 +31,8 @@ module "dynamodb" {
   billing_mode = var.billing_mode
   create_kms_key = var.create_kms_key
 }
+
+module "iam" {
+  source = "./iam"
+  cluster_name = var.cluster_name
+}

@@ -55,3 +55,25 @@ jobs:
           docker tag  $ECR_REPOSITORY_WEB:$TAG $REG/$ECR_REPOSITORY_WEB:staging-latest
           docker push $REG/$ECR_REPOSITORY_WEB:$TAG
           docker push $REG/$ECR_REPOSITORY_WEB:staging-latest   
+
+    - name: Update Kubernetes Deployments
+      env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      run: |
+          mkdir -p ~/.kube
+          echo "$KUBE_CONFIG_DATA" | base64 -d > ~/.kube/config
+
+          ## Create namespaces
+
+          kubectl create namespace backend-ns --dry-run=client -o yaml | kubectl apply -f -
+
+          ## Update deployment to use the latest image tag from AWS ECR
+
+          REG="${{ steps.login-ecr.outputs.registry }}"
+          kubectl set image deployment/backend backend=$REG/$ECR_REPOSITORY_APP:prod-latest -n backend-ns          
+          kubectl set image deployment/web web=$REG/$ECR_REPOSITORY_WEB:prod-latest -n web-ns
+
+
+
+          kubectl rollout status deployment/backend -n backend-ns
+          kubectl rollout status deployment/web -n web-ns      
